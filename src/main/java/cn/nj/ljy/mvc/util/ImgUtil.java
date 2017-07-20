@@ -14,18 +14,23 @@ import org.slf4j.LoggerFactory;
 public class ImgUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImgUtil.class);
-//    private static final int size = 300;
+    // private static final int size = 300;
 
     public static BufferedImage compressImage(BufferedImage src, int width, int height) {
         return Scalr.resize(src, Method.ULTRA_QUALITY, Mode.FIT_EXACT, width, height);
     }
 
-    public static BufferedImage compressImg(String url, int size) throws Exception  {
+    public static BufferedImage compressImg(String url, int size) throws Exception {
 
         URL imgRul = new URL(url);
         BufferedImage originImg = ImageIO.read(imgRul);
         BufferedImage newImg = compressImage(originImg, size,
                 (int) (size * originImg.getHeight() / originImg.getWidth()));
+        return newImg;
+    }
+
+    public static BufferedImage compressImg(BufferedImage src, int size) throws Exception {
+        BufferedImage newImg = compressImage(src, size, (int) (size * src.getHeight() / src.getWidth()));
         return newImg;
     }
 
