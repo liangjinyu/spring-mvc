@@ -78,31 +78,41 @@ public class FileController {
         boolean isSizeOk = false;
         int size = DEFAULT_SIZE;
         BufferedImage originImg = null;
+//        try {
+//            URL imgRul = new URL(url);
+//            originImg = ImageIO.read(imgRul);
+//        } catch (Exception e) {
+//            LOGGER.error(e.getMessage(), e);
+//        }
+//        
         try {
-            URL imgRul = new URL(url);
-            originImg = ImageIO.read(imgRul);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            originImg = ImageIO.read(new File("F:\\tmp\\sp_img7@3x.png"));
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
         }
-
+        
+//        BufferedImage bufferedImage = ImgUtil.compressImgWithLimit(originImg,size,limit);
         while (!isSizeOk) {
             // 压缩至指定大小
             InputStream is = null;
             BufferedImage bufferedImage = null;
             try {
+                size = Math.min( (int)(originImg.getWidth()*0.6), size);
+                
                 bufferedImage = ImgUtil.compressImg(originImg, size);
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
-                ImageIO.write(bufferedImage, "gif", os);
+                ImageIO.write(bufferedImage, "png", os);
                 int storeSize = ((os.size() - 1) / 1024) + 1;
                 if (storeSize <= limit) {
                     is = new ByteArrayInputStream(os.toByteArray());
                     IOUtils.copy(is, response.getOutputStream());
                     isSizeOk = true;
-                    File newImg = new File("F:\\tmp\\test.jpg");
-                    ImageIO.write(bufferedImage, "jpg", newImg);
+                    File newImg = new File("F:\\tmp\\test.png");
+                    ImageIO.write(bufferedImage, "png", newImg);
 
                     LOGGER.info("os.size() = " + os.size());
-                    LOGGER.info("newImg.length() = " + newImg.length());
+//                    LOGGER.info("newImg.length() = " + newImg.length());
 
                 } else {
                     int tempSize1 = (int) (size / Math.sqrt(((double) storeSize / limit)));

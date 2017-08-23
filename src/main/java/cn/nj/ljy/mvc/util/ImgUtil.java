@@ -1,6 +1,7 @@
 package cn.nj.ljy.mvc.util;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
@@ -32,6 +33,25 @@ public class ImgUtil {
     public static BufferedImage compressImg(BufferedImage src, int size) throws Exception {
         BufferedImage newImg = compressImage(src, size, (int) (size * src.getHeight() / src.getWidth()));
         return newImg;
+    }
+
+    public static BufferedImage compressImgWithLimit(BufferedImage src, int compressSize, int storeSizeLimit) throws Exception {
+        boolean isSizeOk = false;
+        while (!isSizeOk) {
+            BufferedImage bufferedImage = ImgUtil.compressImg(src, compressSize);
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, "jpg", os);
+            int storeSize = ((os.size() - 1) / 1024) + 1;
+            if (storeSize <= storeSizeLimit) {
+                isSizeOk = true;
+                return bufferedImage;
+            } else {
+                int tempSize1 = (int) (compressSize / Math.sqrt(((double) storeSize / storeSizeLimit)));
+                int tempSize2 = (int) (compressSize * 0.6);
+                compressSize = Math.min(tempSize1, tempSize2);
+            }
+        }
+        return src;
     }
 
     // public static void compressTestUrl(String url, String newImgPath) throws MalformedURLException {
